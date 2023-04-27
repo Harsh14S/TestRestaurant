@@ -1,5 +1,5 @@
-import { Dimensions, Image, ImageBackground, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Dimensions, FlatList, Image, ImageBackground, StyleSheet, Text, View } from 'react-native'
+import React, { useState } from 'react'
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import Carousel from 'react-native-snap-carousel';
 import { CommonStyles } from '../common/CommonStyles';
@@ -8,34 +8,27 @@ import { ImageLinks } from '../common/ImageLinks';
 import { IconLinks } from '../common/IconLinks';
 import IconButton from '../common/CommonComponents/IconButton';
 
-export default CarouselItem = () => {
-  const data = [
-    {
-      title: "Aenean leo",
-      body: "Ut tincidunt tincidunt ",
-      imgUrl: ImageLinks.Restaurant1,
-    },
-    {
-      title: "In turpis",
-      body: "Aenean ut eros et nisl  ",
-      imgUrl: ImageLinks.Restaurant2,
-    },
-    {
-      title: "Lorem Ipsum",
-      body: "Phasellus ullamcorper ipsum",
-      imgUrl: ImageLinks.Restaurant3,
-    },
-    {
-      title: "In turpis",
-      body: "Aenean ut eros et nisl",
-      imgUrl: ImageLinks.Restaurant4,
-    },
-    {
-      title: "Lorem Ipsum",
-      body: "Nullam quis ante. Etiam ",
-      imgUrl: ImageLinks.Restaurant5,
-    },
-  ];
+const { width, height } = Dimensions.get('screen');
+
+export default CarouselItem = ({ CarouselData }) => {
+
+  const [sliderState, setSliderState] = useState({ currentPage: 0 });
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+
+
+  // const setSliderPage = ({ nativeEvent }) => {
+  //   const { currentPage } = sliderState;
+  //   const { x } = nativeEvent.contentOffset;
+  //   const indexOfNextScreen = Math.floor(x / Math.floor(width));
+  //   if (indexOfNextScreen !== currentPage) {
+  //     setSliderState({
+  //       ...sliderState,
+  //       currentPage: indexOfNextScreen,
+  //     });
+  //   }
+  //   // console.log(indexOfNextScreen)
+  // };
 
   _renderItem = ({ item, index }) => {
     return (
@@ -44,31 +37,31 @@ export default CarouselItem = () => {
         <View style={styles.sliderDetails}>
           <View style={styles.sliderDetailsLeft}>
             <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.bodyTxt}>{item.body}</Text>
+            <Text style={styles.bodyTxt}>{item.description}</Text>
           </View>
           <View style={styles.sliderDetailsRight}>
             <IconButton imgSrc={IconLinks.direction} imgStyle={styles.iconImage} buttonStyle={styles.btnStyle} />
-            {/* <Image source={IconLinks.direction} style={styles.lo} /> */}
           </View>
-
         </View>
       </View>
     );
   }
 
   return (
-    <ImageBackground style={[styles.container, CommonStyles.verticalPadding]} source={ImageLinks.SunsetVertical}>
-      <View style={{ marginBottom: RFPercentage(4) }}>
-
-        <Carousel
-          ref={null}
-          data={data}
-          renderItem={_renderItem}
-          sliderWidth={Dimensions.get('screen').width}
-          itemWidth={Dimensions.get('screen').width / 1.2}
-        />
-      </View>
-    </ImageBackground>
+    <View style={{ marginBottom: RFPercentage(4), flexDirection: 'row' }}>
+      <FlatList
+        data={CarouselData}
+        renderItem={_renderItem}
+        showsHorizontalScrollIndicator={false}
+        snapToOffsets={[...Array(CarouselData.length)].map(
+          (x, i) => i * (width / 1.3) + (i - 1) * RFPercentage(4)
+        )}
+        horizontal
+        snapToAlignment='center'
+        scrollEventThrottle={16}
+        decelerationRate={'fast'}
+      />
+    </View>
   )
 }
 
@@ -78,31 +71,34 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sliderContainer: {
-    width: '100%',
+    width: width / 1.3,
     borderRadius: RFPercentage(2),
     overflow: 'hidden',
     backgroundColor: COLORS.white,
-    paddingBottom: RFPercentage(3),
+    marginHorizontal: RFPercentage(2),
   },
   title: {
     fontWeight: '700',
-    fontSize: RFPercentage(3),
+    fontSize: RFPercentage(2.2),
   },
   bodyTxt: {
-    fontWeight: '500',
-    fontSize: RFPercentage(2.5),
-    color: COLORS.black,
+    // fontWeight: '500',
+    fontSize: RFPercentage(1.8),
+    color: COLORS.grey,
   },
   restaurantImages: {
-    height: RFPercentage(25),
+    height: RFPercentage(20),
     width: '100%',
   },
   sliderDetails: {
     flexDirection: 'row',
-    padding: RFPercentage(2)
+    paddingHorizontal: RFPercentage(2),
   },
   sliderDetailsLeft: {
     flex: 1,
+    paddingVertical: RFPercentage(1.5),
+    // backgroundColor: COLORS.blue,
+    paddingBottom: RFPercentage(4),
   },
   sliderDetailsRight: {
     justifyContent: 'center',
@@ -110,11 +106,14 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     backgroundColor: COLORS.darkorange,
-    borderRadius: RFPercentage(1),
+    borderRadius: RFPercentage(0.8),
     paddingVertical: RFPercentage(1),
-    marginLeft: RFPercentage(1)
+    paddingHorizontal: RFPercentage(1.5),
+    marginLeft: RFPercentage(1),
   },
   iconImage: {
     tintColor: COLORS.white,
+    width: RFPercentage(2.5),
+    height: RFPercentage(2.5),
   }
 })

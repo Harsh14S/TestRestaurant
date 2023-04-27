@@ -4,4 +4,5 @@ export const IconLinks = {
   menuBars: require('../assets/Icons/menuBars.png'),
   gps: require('../assets/Icons/gps.png'),
   direction: require('../assets/Icons/direction.png'),
+  locationMarker: require('../assets/Icons/locationMarker.png'),
 }

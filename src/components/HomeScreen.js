@@ -12,7 +12,7 @@ export default HomeScreen = ({ navigation }) => {
       <HeaderHome navigation={navigation} />
       <View style={styles.subContainer}>
         <Button title={'Maps'} textStyle={styles.btnTxt} buttonStyle={styles.btnStyle} onPress={() => navigation.navigate('mapScreen')} />
-        <Button title={'Carousel Item'} textStyle={styles.btnTxt} buttonStyle={styles.btnStyle} onPress={() => navigation.navigate('carouseItem')} />
+        {/* <Button title={'Carousel Item'} textStyle={styles.btnTxt} buttonStyle={styles.btnStyle} onPress={() => navigation.navigate('carouseItem')} /> */}
       </View>
     </View>
   )

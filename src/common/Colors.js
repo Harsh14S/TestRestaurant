@@ -13,6 +13,6 @@ export const COLORS = {
   light_white: 'rgba(245,245,245,1)',
   textbox_color: "rgb(243,243,243)",
   redColor: 'red',
-  darkorange: 'darkorange',
-  orange: 'orange'
+  darkorange: 'rgba(229,110,60,1)',
+  orange: 'orange',
 }

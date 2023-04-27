@@ -8,7 +8,7 @@ import { IconLinks } from '../IconLinks'
 export default HeaderMapScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <IconButton imgSrc={IconLinks.leftArrow} />
+      <IconButton imgSrc={IconLinks.leftArrow} onPress={() => navigation.goBack()} />
       <Text style={styles.headerTxt}>Maps Explorer</Text>
       <IconButton imgSrc={IconLinks.gps} />
     </View>
