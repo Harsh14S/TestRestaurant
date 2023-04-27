@@ -5,4 +5,5 @@ export const IconLinks = {
   gps: require('../assets/Icons/gps.png'),
   direction: require('../assets/Icons/direction.png'),
   locationMarker: require('../assets/Icons/locationMarker.png'),
-}
+  positionPin: require('../assets/Icons/positionPin.png'),
+};
