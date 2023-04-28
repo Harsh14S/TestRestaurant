@@ -1,75 +1,129 @@
 import {
+  Animated,
   Dimensions,
   FlatList,
   Image,
   ImageBackground,
+  Platform,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {RFPercentage} from 'react-native-responsive-fontsize';
+import React, { useEffect, useState } from 'react';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import Carousel from 'react-native-snap-carousel';
-import {CommonStyles} from '../common/CommonStyles';
-import {COLORS} from '../common/Colors';
-import {ImageLinks} from '../common/ImageLinks';
-import {IconLinks} from '../common/IconLinks';
+import { CommonStyles } from '../common/CommonStyles';
+import { COLORS } from '../common/Colors';
+import { ImageLinks } from '../common/ImageLinks';
+import { IconLinks } from '../common/IconLinks';
 import IconButton from '../common/CommonComponents/IconButton';
 
-const {width, height} = Dimensions.get('screen');
+const { width, height } = Dimensions.get('screen');
+const CARD_HEIGHT = height / 3;
+const CARD_WIDTH = width / 1.3;
+const SPACING_FOR_CARD_INSET = RFPercentage(2);
 
-export default CarouselItem = ({CarouselData}) => {
-  const [sliderState, setSliderState] = useState({currentPage: 0});
+
+export default CarouselItem = ({ CarouselData, initRegion, setInitRegion, mapRef, mapIndex, mapAnimation }) => {
+  const [sliderState, setSliderState] = useState({ currentPage: 0 });
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // const setSliderPage = ({nativeEvent}) => {
-  //   const {currentPage} = sliderState;
-  //   const {x} = nativeEvent.contentOffset;
-  //   const indexOfNextScreen = Math.floor(x / Math.floor(width));
-  //   if (indexOfNextScreen !== currentPage) {
-  //     setSliderState({
-  //       ...sliderState,
-  //       currentPage: indexOfNextScreen,
-  //     });
-  //   }
-  //   console.log(indexOfNextScreen);
-  // };
+  // let mapIndex = 0;
+  // let mapAnimation = new Animated.Value(0);
 
-  _renderItem = ({item, index}) => {
-    return (
-      <View style={styles.sliderContainer} key={index}>
-        <Image source={item.imgUrl} style={styles.restaurantImages} />
-        <View style={styles.sliderDetails}>
-          <View style={styles.sliderDetailsLeft}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.bodyTxt}>{item.description}</Text>
-          </View>
-          <View style={styles.sliderDetailsRight}>
-            <IconButton
-              imgSrc={IconLinks.direction}
-              imgStyle={styles.iconImage}
-              buttonStyle={styles.btnStyle}
-            />
-          </View>
-        </View>
-      </View>
-    );
-  };
+  // useEffect(() => {
+  //   mapAnimation.addListener(({ value }) => {
+  //     let index = Math.floor(value / CARD_WIDTH + 0.3)
+  //     if (index >= CarouselData.length) {
+  //       index = CarouselData.length - 1;
+  //     }
+  //     if (index <= 0) {
+  //       index = 0;
+  //     }
+
+  //     clearTimeout(regionTimeout);
+
+  //     const regionTimeout = setTimeout(() => {
+  //       if (mapIndex !== index) {
+  //         mapIndex = index;
+  //         const { coordinate } = CarouselData[index];
+  //         mapRef.current.animateToRegion({
+  //           ...coordinate,
+  //           latitudeDelta: 0.04,
+  //           longitudeDelta: 0.04,
+  //         })
+  //       }
+  //     }, 10)
+  //   })
+  // })
+
 
   return (
-    <View style={{marginBottom: RFPercentage(4), flexDirection: 'row'}}>
-      <FlatList
+    <View style={{ marginBottom: RFPercentage(4), flexDirection: 'row' }}>
+      <Animated.FlatList
         data={CarouselData}
-        renderItem={_renderItem}
         showsHorizontalScrollIndicator={false}
-        snapToOffsets={[...Array(CarouselData.length)].map(
-          (x, i) => i * (width / 1.3) + (i - 1) * RFPercentage(4),
-        )}
         horizontal
+        // snapToInterval={CARD_WIDTH + RFPercentage(4) + Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0}
+        snapToInterval={CARD_WIDTH + RFPercentage(4)}
         snapToAlignment="center"
+        pagingEnabled
         scrollEventThrottle={16}
         decelerationRate={'fast'}
-        // onScroll={e => setSliderPage(e)}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  x: mapAnimation
+                }
+              }
+            }
+          ],
+          { useNativeDriver: true }
+        )}
+        renderItem={({ item, index }) => {
+          return (
+            // <View style={styles.sliderContainer} key={index}>
+            //   {
+            //     index === 0 ? null : <Image source={IconLinks.leftAngle} style={styles.leftRightArrow} />
+            //   }
+            <View style={styles.cardContainer} key={index}>
+              <Image source={item.imgUrl} style={styles.restaurantImages} />
+              <View style={styles.sliderDetails}>
+                <View style={styles.sliderDetailsLeft}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.bodyTxt}>{item.description}</Text>
+                </View>
+                <View style={styles.sliderDetailsRight}>
+                  <IconButton
+                    imgSrc={IconLinks.direction}
+                    imgStyle={styles.iconImage}
+                    buttonStyle={styles.btnStyle}
+                  />
+                </View>
+              </View>
+            </View>
+            //   {
+            //     index === (CarouselData.length - 1) ? null : <Image source={IconLinks.rightAngle} style={styles.leftRightArrow} />
+            //   }
+            // </View>
+          );
+        }}
+      // contentInset={{
+      //   top: 0,
+      //   left: SPACING_FOR_CARD_INSET,
+      //   bottom: 0,
+      //   right: SPACING_FOR_CARD_INSET,
+      // }}
+      // contentContainerStyle={{
+      //   paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : null,
+      // }}
+      // snapToOffsets={[...Array(CarouselData.length)].map(
+      //   (x, i) => i * (width)
+      //   // (x, i) => i * (width / 1.3) + (i - 1) * RFPercentage(4),
+      // )}
+      // onScroll={e => setSliderPage(e)}
       />
     </View>
   );
@@ -81,7 +135,20 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sliderContainer: {
-    width: width / 1.3,
+    flexDirection: 'row',
+    width: width,
+    // height: CARD_HEIGHT,
+    borderRadius: RFPercentage(2),
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+    // backgroundColor: COLORS.blue,
+    // marginHorizontal: RFPercentage(2),
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  cardContainer: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
     borderRadius: RFPercentage(2),
     overflow: 'hidden',
     backgroundColor: COLORS.white,
@@ -126,4 +193,9 @@ const styles = StyleSheet.create({
     width: RFPercentage(2.5),
     height: RFPercentage(2.5),
   },
+  leftRightArrow: {
+    height: RFPercentage(3),
+    width: RFPercentage(3),
+    tintColor: COLORS.black,
+  }
 });
