@@ -11,8 +11,10 @@ export const COLORS = {
   tranparantGreen: 'rgb(229,242,219)',
   txt_color: 'rgba(51,51,51,1)',
   light_white: 'rgba(245,245,245,1)',
-  textbox_color: "rgb(243,243,243)",
+  textbox_color: 'rgb(243,243,243)',
   redColor: 'red',
   darkorange: 'rgba(229,110,60,1)',
   orange: 'orange',
-}
+  azure: '#1A73E9',
+  deepSkyBlue: '#00AFFE',
+};

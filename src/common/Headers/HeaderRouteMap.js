@@ -6,7 +6,7 @@ import IconButton from '../CommonComponents/IconButton';
 import {IconLinks} from '../IconLinks';
 import {CommonStyles} from '../CommonStyles';
 
-export default HeaderMapScreen = ({navigation, toYourCurrentLocation}) => {
+export default HeaderRouteMap = ({navigation}) => {
   return (
     <View style={[styles.container, CommonStyles.topMargin]}>
       <StatusBar barStyle={'dark-content'} />
@@ -14,8 +14,8 @@ export default HeaderMapScreen = ({navigation, toYourCurrentLocation}) => {
         imgSrc={IconLinks.leftArrow}
         onPress={() => navigation.goBack()}
       />
-      <Text style={styles.headerTxt}>Maps Explorer</Text>
-      <IconButton imgSrc={IconLinks.gps} onPress={toYourCurrentLocation} />
+      <Text style={styles.headerTxt}>Path Way</Text>
+      <IconButton imgSrc={IconLinks.gps} />
     </View>
   );
 };

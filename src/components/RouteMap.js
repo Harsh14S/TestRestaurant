@@ -9,29 +9,25 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { COLORS } from '../common/Colors';
-import HeaderMapScreen from '../common/Headers/HeaderMapScreen';
-import { CommonStyles } from '../common/CommonStyles';
-import CarouselItem from './CarouselItem';
+import React, {useEffect, useRef, useState} from 'react';
+import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import {COLORS} from '../common/Colors';
+import {CommonStyles} from '../common/CommonStyles';
 import Geolocation from 'react-native-geolocation-service';
-import { request, PERMISSIONS } from 'react-native-permissions';
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import { RestaurantDetails } from '../assets/data';
-import { IconLinks } from '../common/IconLinks';
+import {request, PERMISSIONS} from 'react-native-permissions';
+import {RFPercentage} from 'react-native-responsive-fontsize';
+import {GOOGLE_MAPS_APIKEY, RestaurantDetails} from '../assets/data';
+import {IconLinks} from '../common/IconLinks';
 import MapViewDirections from 'react-native-maps-directions';
+import HeaderRouteMap from '../common/Headers/HeaderRouteMap';
 
-const { width, height } = Dimensions.get('screen');
+const {width, height} = Dimensions.get('screen');
 const CARD_HEIGHT = height / 3;
 const CARD_WIDTH = width / 1.3;
 const SPACING_FOR_CARD_INSET = RFPercentage(2);
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyA_ytvniIVKFoF8aEfW8L3xFF2uBFtvgJQ';
-
-
-export default RouteMap = ({ route, navigation }) => {
-  const dataItem = route.params.item
+export default RouteMap = ({route, navigation}) => {
+  const dataItem = route.params.item;
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [initRegion, setInitRegion] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -39,8 +35,8 @@ export default RouteMap = ({ route, navigation }) => {
   // const _scrollView = useRef(null);
 
   useEffect(() => {
-    console.log('1st UseEffect');
-    console.log('Routes: ', dataItem);
+    // console.log('1st UseEffect');
+    // console.log('Routes: ', dataItem);
     Platform.OS === 'ios'
       ? askForPermissions(PERMISSIONS.IOS.LOCATION_ALWAYS)
       : askForPermissions(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
@@ -62,8 +58,8 @@ export default RouteMap = ({ route, navigation }) => {
   let mapAnimation = new Animated.Value(0);
 
   useEffect(() => {
-    mapAnimation.addListener(({ value }) => {
-      let index = Math.floor(value / CARD_WIDTH + 0.3)
+    mapAnimation.addListener(({value}) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3);
       if (index >= RestaurantDetails.length) {
         index = RestaurantDetails.length - 1;
       }
@@ -76,14 +72,17 @@ export default RouteMap = ({ route, navigation }) => {
       const regionTimeout = setTimeout(() => {
         if (mapIndex !== index) {
           mapIndex = index;
-          const { coordinate } = RestaurantDetails[index];
-          _map.current.animateToRegion({
-            ...coordinate,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          }, 300);
+          const {coordinate} = RestaurantDetails[index];
+          _map.current.animateToRegion(
+            {
+              ...coordinate,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.02,
+            },
+            300,
+          );
         }
-      }, 10)
+      }, 10);
     });
   });
 
@@ -105,47 +104,52 @@ export default RouteMap = ({ route, navigation }) => {
           console.log('Error: ', error);
           // console.log(error.code, error.message);
         },
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 },
+        {enableHighAccuracy: true, maximumAge: 10000, timeout: 10000},
       );
     }
   }, [askForPermissions]);
 
   return (
-    <View style={[styles.container, CommonStyles.verticalPadding]}>
-      <HeaderMapScreen navigation={navigation} />
+    <View style={[styles.container]}>
+      {/* <View style={{position: 'absolute', top: 0, zIndex: 10}}> */}
+      <HeaderRouteMap navigation={navigation} />
+      {/* </View> */}
       {initRegion && isPermissionGranted ? (
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
           <MapView
-            // provider={PROVIDER_GOOGLE}
+            provider={PROVIDER_GOOGLE}
             ref={_map}
             initialRegion={initRegion}
-            style={{ flex: 1 }}>
+            mapType={'standard'}
+            showsUserLocation={true}
+            showsCompass={false}
+            showsMyLocationButton={true}
+            // showsScale={true}
+            showsTraffic={true}
+            toolbarEnabled={false}
+            moveOnMarkerPress={false}
+            style={{flex: 1}}
+            loadingEnabled={true}>
             <MapViewDirections
               origin={initRegion}
               destination={destination}
               apikey={GOOGLE_MAPS_APIKEY}
+              strokeWidth={5}
+              optimizeWaypoints={true}
+              strokeColor={COLORS.deepSkyBlue}
             />
-            <Marker
+            {/* <Marker
               coordinate={initRegion}
               title="Current Location"
-              description="You are currently standing here"
-            >
-              <Image
-                style={{
-                  height: RFPercentage(5),
-                  width: RFPercentage(5),
-                  // tintColor: COLORS.darkorange,
-                }}
-                source={IconLinks.positionPin}
-                resizeMode="contain"
-              />
-            </Marker>
+              description="You are currently standing here">
+              <View style={[styles.circleMarkerView]}></View>
+            </Marker> */}
+
             <Marker
-              coordinate={initRegion}
+              coordinate={destination}
               title="Your Destination"
-              description="You want to go there"
-            >
-              <Image
+              description="You want to go there">
+              {/* <Image
                 style={{
                   height: RFPercentage(5),
                   width: RFPercentage(5),
@@ -153,12 +157,12 @@ export default RouteMap = ({ route, navigation }) => {
                 }}
                 source={IconLinks.positionPin}
                 resizeMode="contain"
-              />
+              /> */}
             </Marker>
           </MapView>
         </View>
       ) : (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={{flex: 1, justifyContent: 'center'}}>
           <ActivityIndicator
             size={Platform.OS === 'ios' ? 'large' : RFPercentage(7)}
             color={COLORS.blue}
@@ -172,5 +176,15 @@ export default RouteMap = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // justifyContent: 'flex-start',
+    // paddingTop: RFPercentage(5),
+  },
+  circleMarkerView: {
+    padding: RFPercentage(1.1),
+    // backgroundColor: 'blue',
+    backgroundColor: COLORS.white,
+    borderRadius: RFPercentage(100),
+    borderWidth: RFPercentage(0.5),
+    borderColor: COLORS.azure,
   },
 });

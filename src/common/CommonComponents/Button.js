@@ -1,9 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import { COLORS } from '../Colors';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-export default ManualButton = ({ title, buttonStyle, textStyle, ...props }) => {
+import {RFPercentage} from 'react-native-responsive-fontsize';
+import {COLORS} from '../Colors';
+export default ManualButton = ({title, buttonStyle, textStyle, ...props}) => {
   return (
     <TouchableOpacity style={[styles.btnStyle, buttonStyle]} {...props}>
       <Text style={[styles.btnTxt, textStyle]}>{title}</Text>
@@ -19,13 +18,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: RFPercentage(1),
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.white,
     // borderWidth: RFPercentage(0.1),
     borderRadius: RFPercentage(1),
+    elevation: 3,
+    shadowColor: COLORS.black,
   },
   btnTxt: {
     fontSize: RFPercentage(2.1),
-    color: COLORS.white,
+    color: COLORS.darkorange,
     fontWeight: '700',
   },
 });

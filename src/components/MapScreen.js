@@ -9,26 +9,24 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { COLORS } from '../common/Colors';
+import React, {useEffect, useRef, useState} from 'react';
+import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import {COLORS} from '../common/Colors';
 import HeaderMapScreen from '../common/Headers/HeaderMapScreen';
-import { CommonStyles } from '../common/CommonStyles';
-import CarouselItem from './CarouselItem';
+import {CommonStyles} from '../common/CommonStyles';
 import Geolocation from 'react-native-geolocation-service';
-import { request, PERMISSIONS } from 'react-native-permissions';
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import { RestaurantDetails } from '../assets/data';
-import { IconLinks } from '../common/IconLinks';
+import {request, PERMISSIONS} from 'react-native-permissions';
+import {RFPercentage} from 'react-native-responsive-fontsize';
+import {RestaurantDetails} from '../assets/data';
+import {IconLinks} from '../common/IconLinks';
 import IconButton from '../common/CommonComponents/IconButton';
 
-const { width, height } = Dimensions.get('screen');
+const {width, height} = Dimensions.get('screen');
 const CARD_HEIGHT = height / 3;
 const CARD_WIDTH = width / 1.3;
 const SPACING_FOR_CARD_INSET = RFPercentage(2);
 
-
-export default MapScreen = ({ navigation }) => {
+export default MapScreen = ({navigation}) => {
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [initRegion, setInitRegion] = useState(null);
   const _map = useRef(null);
@@ -56,8 +54,8 @@ export default MapScreen = ({ navigation }) => {
   let mapAnimation = new Animated.Value(0);
 
   useEffect(() => {
-    mapAnimation.addListener(({ value }) => {
-      let index = Math.floor(value / CARD_WIDTH + 0.3)
+    mapAnimation.addListener(({value}) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3);
       if (index >= RestaurantDetails.length) {
         index = RestaurantDetails.length - 1;
       }
@@ -70,33 +68,39 @@ export default MapScreen = ({ navigation }) => {
       const regionTimeout = setTimeout(() => {
         if (mapIndex !== index) {
           mapIndex = index;
-          const { coordinate } = RestaurantDetails[index];
-          _map.current.animateToRegion({
-            ...coordinate,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          }, 300);
+          const {coordinate} = RestaurantDetails[index];
+          _map.current.animateToRegion(
+            {
+              ...coordinate,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.02,
+            },
+            350,
+          );
         }
-      }, 10)
+      }, 10);
     });
   });
+
+  // move to your current location
+  const toYourCurrentLocation = () => {
+    _map.current.animateToRegion(initRegion, 500);
+  };
 
   const interpolations = RestaurantDetails.map((marker, index) => {
     const inputRange = [
       (index - 1) * CARD_WIDTH,
       index * CARD_WIDTH,
-      ((index + 1) * CARD_WIDTH),
+      (index + 1) * CARD_WIDTH,
     ];
 
     const scale = mapAnimation.interpolate({
       inputRange,
       outputRange: [1, 1.5, 1],
-      extrapolate: "clamp"
+      extrapolate: 'clamp',
     });
-
-    return { scale };
+    return {scale};
   });
-
 
   useEffect(() => {
     // console.log("2nd UseEffect");
@@ -116,60 +120,69 @@ export default MapScreen = ({ navigation }) => {
           console.log('Error: ', error);
           // console.log(error.code, error.message);
         },
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 },
+        {enableHighAccuracy: true, maximumAge: 10000, timeout: 10000},
       );
     }
   }, [askForPermissions]);
 
   return (
-    <View style={[styles.container, CommonStyles.verticalPadding]}>
-      <HeaderMapScreen navigation={navigation} />
+    <View style={styles.container}>
+      {/* <HeaderMapScreen
+        navigation={navigation}
+        toYourCurrentLocation={toYourCurrentLocation}
+      /> */}
       {initRegion && isPermissionGranted ? (
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
           <MapView
-            // provider={PROVIDER_GOOGLE}
+            provider={PROVIDER_GOOGLE}
             ref={_map}
             initialRegion={initRegion}
-            style={{ flex: 1 }}>
-            <Marker
+            mapType={'standard'}
+            showsUserLocation={true}
+            showsCompass={false}
+            showsMyLocationButton={true}
+            // showsScale={true}
+            showsTraffic={true}
+            toolbarEnabled={false}
+            moveOnMarkerPress={false}
+            style={{flex: 1}}
+            loadingEnabled={true}>
+            {/* <Marker
               coordinate={initRegion}
               title="Current Location"
-              description="You are currently standing here"
-            >
-              <Image
-                style={{
-                  height: RFPercentage(5),
-                  width: RFPercentage(5),
-                  // tintColor: COLORS.darkorange,
-                }}
-                source={IconLinks.positionPin}
-                resizeMode="contain"
-              />
-            </Marker>
+              description="You are currently standing here">
+              <View style={[styles.circleMarkerView]}></View>
+            </Marker> */}
             {RestaurantDetails.map((item, index) => {
               // console.log('item: ', item);
               const scaleStyle = {
                 transform: [
                   {
-                    scale: interpolations[index].scale
-                  }
-                ]
-              }
+                    scale: interpolations[index].scale,
+                  },
+                ],
+              };
               return (
                 <Marker
                   key={index}
                   coordinate={item.coordinate}
                   title={item.title}
                   description={item.description}
-                  image={IconLinks.locationMarker128px}
+                  // image={IconLinks.locationMarker128px}
                 >
-
+                  <IconButton
+                    imgSrc={IconLinks.locationMarker128px}
+                    imgStyle={{
+                      height: RFPercentage(4),
+                      width: RFPercentage(4),
+                      tintColor: COLORS.darkorange,
+                    }}
+                  />
                 </Marker>
               );
             })}
           </MapView>
-          <View style={{ flex: 1, position: 'absolute', bottom: 0 }}>
-
+          <View style={{flex: 1, position: 'absolute', bottom: 0}}>
             <Animated.FlatList
               data={RestaurantDetails}
               showsHorizontalScrollIndicator={false}
@@ -185,18 +198,20 @@ export default MapScreen = ({ navigation }) => {
                   {
                     nativeEvent: {
                       contentOffset: {
-                        x: mapAnimation
-                      }
-                    }
-                  }
+                        x: mapAnimation,
+                      },
+                    },
+                  },
                 ],
-                { useNativeDriver: true }
+                {useNativeDriver: true},
               )}
-              renderItem={({ item, index }) => {
+              renderItem={({item, index}) => {
                 return (
-
                   <View style={styles.cardContainer} key={index}>
-                    <Image source={item.imgUrl} style={styles.restaurantImages} />
+                    <Image
+                      source={item.imgUrl}
+                      style={styles.restaurantImages}
+                    />
                     <View style={styles.sliderDetails}>
                       <View style={styles.sliderDetailsLeft}>
                         <Text style={styles.title}>{item.title}</Text>
@@ -207,22 +222,22 @@ export default MapScreen = ({ navigation }) => {
                           imgSrc={IconLinks.direction}
                           imgStyle={styles.iconImage}
                           buttonStyle={styles.btnStyle}
-                          onPress={() => navigation.navigate('routeMap', {
-                            item: item
-                          })}
+                          onPress={() =>
+                            navigation.navigate('routeMap', {
+                              item: item,
+                            })
+                          }
                         />
                       </View>
                     </View>
                   </View>
-
                 );
               }}
-
             />
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={{flex: 1, justifyContent: 'center'}}>
           <ActivityIndicator
             size={Platform.OS === 'ios' ? 'large' : RFPercentage(7)}
             color={COLORS.blue}
@@ -301,6 +316,14 @@ const styles = StyleSheet.create({
   markerIcon: {
     tintColor: COLORS.green,
     height: RFPercentage(5),
-    width: RFPercentage(5)
+    width: RFPercentage(5),
+  },
+  circleMarkerView: {
+    padding: RFPercentage(1.1),
+    // backgroundColor: 'blue',
+    backgroundColor: COLORS.white,
+    borderRadius: RFPercentage(100),
+    borderWidth: RFPercentage(0.5),
+    borderColor: COLORS.azure,
   },
 });
