@@ -5,6 +5,7 @@ import HomeScreen from '../components/HomeScreen';
 import MapScreen from '../components/MapScreen';
 import CarouselItem from '../components/CarouselItem';
 import RouteMap from '../components/RouteMap';
+import ImagePicker from '../components/ImagePicker';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,7 +19,7 @@ export default mainNavigator = () => {
       <Stack.Screen name='home' component={HomeScreen} />
       <Stack.Screen name='mapScreen' component={MapScreen} />
       <Stack.Screen name='routeMap' component={RouteMap} />
-      <Stack.Screen name='carouseItem' component={CarouselItem} />
+      <Stack.Screen name='imagePicker' component={ImagePicker} />
     </Stack.Navigator>
   )
 }
